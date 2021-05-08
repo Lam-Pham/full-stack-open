@@ -32,13 +32,20 @@ app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
     const person = persons.find(person => person.id === id)
     response.json(person)
-  })
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
+    persons = persons.filter(person => person.id !== id)
+    
+    response.status(204).end()
+})
 
 app.get('/info', (request, response) => {
     const total = persons.length
     const date = new Date()
     response.send(`<p>Phonebook has info for ${total} people</p><p>${date}</p>`)
-  })
+})
 
 const PORT = 3001
 app.listen(PORT, () => {
