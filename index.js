@@ -9,7 +9,7 @@ app.use(express.static('build'))
 app.use(express.json())
 app.use(morgan('tiny'))
 
-let persons = [
+let notes = [
     {
         id: 1,
         name: "Arto Hellas",
@@ -32,56 +32,56 @@ let persons = [
       }
 ]
 
-app.get('/api/persons', (request, response) => {
-  response.json(persons)
+app.get('/api/notes', (request, response) => {
+  response.json(notes)
 })
 
 const generateId = () => {
-    const maxId = persons.length > 0
-    ? Math.max(...persons.map(n => n.id))
+    const maxId = notes.length > 0
+    ? Math.max(...notes.map(n => n.id))
     : 0
     return maxId + 1
 }
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/notes', (request, response) => {
     const body = request.body
 
     if (!body.name || !body.number) {
         return response.status(400).json({
             error: 'name or number missing'
         })
-    } else if (persons.find(person => person.name === body.name)) {
+    } else if (notes.find(note => note.name === body.name)) {
         return response.status(400).json({
             error: 'name must be unique'
         })
     }
 
-    const person = {
+    const note = {
         id: generateId(),
         name: body.name,
         number: body.number
     }
 
-    persons = persons.concat(person)
+    notes = notes.concat(note)
     
-    response.json(person)
+    response.json(note)
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/notes/:id', (request, response) => {
     const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    response.json(person)
+    const note = notes.find(note => note.id === id)
+    response.json(note)
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/notes/:id', (request, response) => {
     const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
+    notes = notes.filter(note => note.id !== id)
     
     response.status(204).end()
 })
 
 app.get('/info', (request, response) => {
-    const total = persons.length
+    const total = notes.length
     const date = new Date()
     response.send(`<p>Phonebook has info for ${total} people</p><p>${date}</p>`)
 })
