@@ -2,10 +2,9 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 require('dotenv').config()
-const mongoose = require('mongoose')
 const Note = require('./models/note')
-app.use(express.json())
 
+app.use(express.json())
 app.use(express.static('build'))
 app.use(cors())
 
@@ -19,54 +18,6 @@ const requestLogger = (request, response, next) => {
 }
 
 app.use(requestLogger)
-
-const url = process.env.MONGODB_URI
-console.log('connecting to', url)
-
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
-  .then(result => {
-    console.log('connected to MongoDB')
-  })
-  .catch((error) => {
-    console.log('error connecting to MongoDB:', error.message)
-  })
-
-const noteSchema = new mongoose.Schema({
-  content: String,
-  date: Date,
-  important: Boolean,
-})
-
-noteSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
-  }
-})
-
-const Note = mongoose.model('Note', noteSchema)
-
-let notes = [
-  {
-    id: 1,
-    content: "HTML is easy",
-    date: "2020-01-10T17:30:31.098Z",
-    important: true
-  },
-  {
-    id: 2,
-    content: "Browser can execute only Javascript",
-    date: "2020-01-10T18:39:34.091Z",
-    important: false
-  },
-  {
-    id: 3,
-    content: "GET and POST are the most important methods of HTTP protocol",
-    date: "2020-01-10T19:20:14.298Z",
-    important: true
-  }
-]
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>')
